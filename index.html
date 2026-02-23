@@ -823,12 +823,12 @@
           <span class="terminal-title">monitor_rpki.sh — bash</span>
         </div>
         <div class="terminal-body">
-<span class="dim">[14:30:01]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS64500</span> / <span class="white">198.51.100.0/22</span>...
-<span class="dim">[14:30:01]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS64500 / 198.51.100.0/22 → <span class="green bold">Valid</span>
-<span class="dim">[14:30:02]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS64500</span> / <span class="white">203.0.113.0/22</span>...
-<span class="dim">[14:30:02]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS64500 / 203.0.113.0/22 → <span class="green bold">Valid</span>
-<span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS64500</span> / <span class="white">2001:db8::/32</span>...
-<span class="dim">[14:30:03]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS64500 / 2001:db8::/32 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:01]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS12345</span> / <span class="white">192.00.00.00/20</span>...
+<span class="dim">[14:30:01]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS12345 / 192.00.00.00/20 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:02]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS12345</span> / <span class="white">192.00.01.00/20</span>...
+<span class="dim">[14:30:02]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS12345 / 192.00.01.00/20 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS12345</span> / <span class="white">2001:db8::/32</span>...
+<span class="dim">[14:30:03]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS12345 / 2001:db8::/32 → <span class="green bold">Valid</span>
 <span class="dim">──────┼─────────┼────────────────────────────────────────────────</span>
 <span class="dim">[14:30:03]</span> <span class="green bold"> OK </span>  │ <span class="green bold">Tudo OK! 7 prefixo(s) com status Valid.</span>
 <span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Próxima verificação: <span class="white">20:30:03</span> (intervalo: 21600s)
@@ -910,7 +910,7 @@
           <h3>🏠 Routinator — API Local</h3>
           <p class="subtitle">Para ISPs e datacenters com infra RPKI</p>
           <code>RPKI_API_MODE="routinator"
-ROUTINATOR_URL="http://10.0.0.1:8323"</code>
+ROUTINATOR_URL="http://192.00.00.00:8323"</code>
           <ul class="api-pros">
             <li><span class="icon">✅</span> <strong>Sem rate limiting</strong> — consulte sem limites</li>
             <li><span class="icon">✅</span> <strong>Resposta &lt;50ms</strong> — rede local</li>
@@ -928,10 +928,10 @@ ROUTINATOR_URL="http://10.0.0.1:8323"</code>
         </p>
         <code style="display: block; background: var(--bg-code); padding: 14px 18px; border-radius: var(--radius-sm); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); border: 1px solid var(--border); white-space: pre; overflow-x: auto;">
 # Via RIPEstat (HTTPS ou HTTP)
-curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.0.2.0/24" | jq '.data.status'
+curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.00.00.00/20" | jq '.data.status'
 
 # Via Routinator local
-curl -s "http://10.0.0.1:8323/api/v1/validity/12345/192.0.2.0/24" | jq '.validated_route.validity.state'</code>
+curl -s "http://192.00.00.00:8323/api/v1/validity/12345/192.00.00.00/20" | jq '.validated_route.validity.state'</code>
       </div>
     </div>
   </section>
@@ -1107,7 +1107,7 @@ nano config.env</code>
 
 <strong>1</strong> problema(s) de <strong>3</strong> prefixo(s):
 
-❌ AS12345 / 192.0.2.0/24 → <span class="red"><strong>INVALID</strong></span>
+❌ AS12345 / 192.00.00.00/20 → <span class="red"><strong>INVALID</strong></span>
 
 🕐 2026-02-23 14:30:00
 🖥️ srv-rpki-01

@@ -27,7 +27,7 @@
 
 ## 🔐 O que é RPKI e por que monitorar?
 
-**RPKI** (Resource Public Key Infrastructure) é o sistema de segurança que protege o roteamento da internet. Ele funciona como um "certificado digital" para rotas BGP — quando você publica um **ROA** (Route Origin Authorization), está declarando oficialmente: *"Eu, AS12345, sou o dono legítimo do prefixo 192.0.2.0/24 e autorizo seu anúncio."*
+**RPKI** (Resource Public Key Infrastructure) é o sistema de segurança que protege o roteamento da internet. Ele funciona como um "certificado digital" para rotas BGP — quando você publica um **ROA** (Route Origin Authorization), está declarando oficialmente: *"Eu, AS12345, sou o dono legítimo do prefixo 192.00.00.00/20 e autorizo seu anúncio."*
 
 ### Por que isso importa?
 
@@ -60,13 +60,13 @@ $ ./monitor_rpki.sh
   ╚══════════════════════════════════════════════════════════════╝
 
 [14:30:00] INFO  │ Servidor iniciado em 2026-02-23 14:30:00
-[14:30:00] INFO  │ API RPKI: Routinator local — http://10.0.0.1:8323
+[14:30:00] INFO  │ API RPKI: Routinator local — http://192.00.00.00:8323
 [14:30:00] INFO  │ Bot Telegram: ATIVO — Comandos: /log /status /check /help
 ──────┼─────────┼────────────────────────────────────────────────
-[14:30:01] INFO  │ Consultando AS12345 / 192.0.2.0/24...
-[14:30:01]  OK   │ ✔ AS12345 / 192.0.2.0/24 → Valid
-[14:30:02] INFO  │ Consultando AS12345 / 198.51.100.0/24...
-[14:30:02]  OK   │ ✔ AS12345 / 198.51.100.0/24 → Valid
+[14:30:01] INFO  │ Consultando AS12345 / 192.00.00.00/20...
+[14:30:01]  OK   │ ✔ AS12345 / 192.00.00.00/20 → Valid
+[14:30:02] INFO  │ Consultando AS12345 / 192.00.01.00/20...
+[14:30:02]  OK   │ ✔ AS12345 / 192.00.01.00/20 → Valid
 ──────┼─────────┼────────────────────────────────────────────────
 [14:30:02]  OK   │ Tudo OK! 2 prefixo(s) com status Valid.
 [14:30:02] INFO  │ Próxima verificação: 14:40:02 (intervalo: 600s)
@@ -179,7 +179,7 @@ O monitor tenta **HTTPS primeiro** e faz **fallback para HTTP** automaticamente 
 
 ```bash
 RPKI_API_MODE="routinator"
-ROUTINATOR_URL="http://10.0.0.1:8323"
+ROUTINATOR_URL="http://192.00.00.00:8323"
 ```
 
 Usa uma instância local do [Routinator](https://www.nlnetlabs.nl/projects/rpki/routinator/) (validador RPKI da NLnet Labs).
@@ -196,7 +196,7 @@ Usa uma instância local do [Routinator](https://www.nlnetlabs.nl/projects/rpki/
 
 ### Por que usamos API local na nossa implementação
 
-Na nossa empresa (**AS64500**), optamos pelo **Routinator local** pelos seguintes motivos:
+Na nossa empresa (**AS12345**), optamos pelo **Routinator local** pelos seguintes motivos:
 
 1. **Velocidade** — A consulta é feita em rede local (LAN), respondendo em milissegundos ao invés de segundos
 2. **Sem rate limiting** — Com 7 prefixos monitorados a cada 6 horas, não queremos depender de limites de API externa
@@ -212,13 +212,13 @@ Se você suspeitar de um **falso positivo** (a API local dizendo que algo é inv
 
 ```bash
 # Verificar via RIPEstat (HTTPS)
-curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.0.2.0/24" | jq '.data.status'
+curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.00.00.00/20" | jq '.data.status'
 
 # Se HTTPS falhar, tente HTTP
-curl -s "http://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.0.2.0/24" | jq '.data.status'
+curl -s "http://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.00.00.00/20" | jq '.data.status'
 
 # Verificar via Routinator local
-curl -s "http://seu-routinator:8323/api/v1/validity/12345/192.0.2.0/24" | jq '.validated_route.validity.state'
+curl -s "http://seu-routinator:8323/api/v1/validity/12345/192.00.00.00/20" | jq '.validated_route.validity.state'
 ```
 
 ### Instalando o Routinator (se quiser usar API local)
@@ -313,7 +313,7 @@ Edite o arquivo `config.env`:
 | `TELEGRAM_CHAT_ID` | ✅ | — | ID do chat/grupo para alertas |
 | `PREFIXOS` | ✅ | — | Lista de `ASN,PREFIXO` separadas por `;` |
 | `RPKI_API_MODE` | | `ripestat` | `ripestat` (público) ou `routinator` (local) |
-| `ROUTINATOR_URL` | ¹ | — | URL do Routinator (ex: `http://10.0.0.1:8323`) |
+| `ROUTINATOR_URL` | ¹ | — | URL do Routinator (ex: `http://192.00.00.00:8323`) |
 | `CHECK_INTERVAL` | | `600` | Intervalo entre checks em **segundos** |
 | `MONITORAR_KRILL_LOCAL` | | `false` | Checar `systemctl is-active krill` |
 | `KRILL_API_URL` | | — | URL da API do Krill |
@@ -366,7 +366,7 @@ Para descobrir seus prefixos:
 
 ```bash
 # Exemplo com múltiplos prefixos
-PREFIXOS="12345,192.0.2.0/24; 12345,198.51.100.0/24; 12345,2001:db8::/32"
+PREFIXOS="12345,192.00.00.00/20; 12345,192.00.01.00/20; 12345,2001:db8::/32"
 ```
 </details>
 
@@ -456,7 +456,7 @@ ROAs-Monitor-Status/
 
 1 problema(s) de 3 prefixo(s):
 
-❌ AS12345 / 192.0.2.0/24 → INVALID
+❌ AS12345 / 192.00.00.00/20 → INVALID
 
 🕐 2026-02-23 14:30:00
 🖥️ srv-rpki-01
