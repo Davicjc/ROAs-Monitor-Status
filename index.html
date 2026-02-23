@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ===== SEO — Primary ===== -->
+  <title>ROA-ASN-Monitor — Monitoramento RPKI em Tempo Real com Alertas Telegram</title>
+  <meta name="description" content="Ferramenta open-source em Bash para monitorar ROAs e validação RPKI do seu ASN em tempo real. Alertas instantâneos via Telegram, console interativo, suporte a Routinator local e API RIPEstat. Sem cron, sem Docker, sem dependências pesadas.">
+  <meta name="keywords" content="RPKI, ROA, ASN, BGP, monitoramento, monitor, validação, Routinator, RIPEstat, RIPE NCC, Telegram, alertas, bash, script, linux, open-source, BGP hijack, route leak, segurança, roteamento, internet, ISP, provedor, Krill, NIC.br, LACNIC, prefixo, autonomous system, route origin authorization">
+  <meta name="author" content="davicjc">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="canonical" href="https://davicjc.github.io/ROA-ASN-Monitor/">
+
+  <!-- ===== SEO — Open Graph (Facebook, LinkedIn, Discord) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ROA-ASN-Monitor">
+  <meta property="og:title" content="ROA-ASN-Monitor — Monitoramento RPKI com Alertas Telegram">
+  <meta property="og:description" content="Daemon Bash interativo que monitora a validação RPKI dos seus prefixos em tempo real. Alertas instantâneos por Telegram quando um ROA muda de Valid para Invalid. Suporte a Routinator local e API pública RIPEstat.">
+  <meta property="og:url" content="https://davicjc.github.io/ROA-ASN-Monitor/">
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/davicjc/ROA-ASN-Monitor">
+  <meta property="og:image:alt" content="ROA-ASN-Monitor — Monitoramento RPKI open-source">
+  <meta property="og:locale" content="pt_BR">
+
+  <!-- ===== SEO — Twitter Card ===== -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ROA-ASN-Monitor — Monitoramento RPKI em Tempo Real">
+  <meta name="twitter:description" content="Daemon Bash para monitorar ROAs/RPKI com alertas instantâneos via Telegram. Console interativo, log permanente, suporte a Routinator e RIPEstat.">
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1/davicjc/ROA-ASN-Monitor">
+  <meta name="twitter:creator" content="@davicjc">
+
+  <!-- ===== SEO — Schema.org JSON-LD (Structured Data) ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ROA-ASN-Monitor",
+    "headline": "Monitoramento RPKI em Tempo Real com Alertas Telegram",
+    "description": "Daemon Bash interativo open-source para monitorar a validação RPKI (ROA) dos prefixos do seu ASN. Receba alertas instantâneos via Telegram quando um prefixo mudar de Valid para Invalid. Suporte a Routinator local e API pública RIPEstat.",
+    "applicationCategory": "NetworkingApplication",
+    "operatingSystem": "Linux",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "davicjc",
+      "url": "https://davicjc.com"
+    },
+    "license": "https://opensource.org/licenses/MIT",
+    "url": "https://github.com/davicjc/ROA-ASN-Monitor",
+    "codeRepository": "https://github.com/davicjc/ROA-ASN-Monitor",
+    "programmingLanguage": "Bash",
+    "keywords": ["RPKI", "ROA", "ASN", "BGP", "monitoring", "Telegram", "Routinator", "RIPEstat", "bash", "open-source", "network security"],
+    "datePublished": "2025-01-01",
+    "softwareVersion": "2.2.0"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "O que é RPKI e por que monitorar?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "RPKI (Resource Public Key Infrastructure) é um framework de segurança que valida a origem dos anúncios BGP usando ROAs (Route Origin Authorizations). Monitorar garante que seus prefixos IP estejam sempre com status Valid, prevenindo BGP hijacks e route leaks."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Preciso de um Routinator local para usar o ROA-ASN-Monitor?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Não. O monitor suporta dois modos: API pública do RIPEstat (padrão, sem instalar nada) e Routinator local (mais rápido, sem rate-limit). Configure via a variável RPKI_API_MODE no config.env."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quais são os requisitos para rodar o ROA-ASN-Monitor?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Apenas um Linux com Bash, curl e jq instalados. Também é necessário um Bot Telegram com token e chat ID configurados. Não precisa de Docker, Python, Node.js ou qualquer runtime pesado."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "O ROA-ASN-Monitor envia alertas quando um prefixo fica Invalid?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim. O monitor envia alertas instantâneos via Telegram quando qualquer prefixo muda para Invalid, Unknown ou apresenta erro de conexão. Também pode enviar confirmações periódicas de que tudo está OK."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- ===== Favicon ===== -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --bg: #0a0e17;
+      --bg-card: #111827;
+      --bg-card-hover: #1a2332;
+      --bg-code: #0d1117;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --green: #22c55e;
+      --green-glow: rgba(34, 197, 94, 0.15);
+      --red: #ef4444;
+      --red-glow: rgba(239, 68, 68, 0.1);
+      --yellow: #eab308;
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+      --border: #1e293b;
+      --border-glow: rgba(59, 130, 246, 0.3);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== GLOW BACKGROUND ===== */
+    .glow-bg {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.02) 0%, transparent 50%);
+      animation: glowMove 20s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes glowMove {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-5%, 5%) rotate(3deg); }
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10, 14, 23, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .github-btn {
+      background: var(--accent);
+      color: white !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .github-btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 160px 0 100px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--accent-glow);
+      border: 1px solid var(--border-glow);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 32px;
+    }
+
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--text-muted);
+      transform: translateY(-2px);
+    }
+
+    /* ===== TERMINAL PREVIEW ===== */
+    .terminal {
+      max-width: 780px;
+      margin: 60px auto 0;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 18px;
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green { background: #28c840; }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-body {
+      padding: 20px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .terminal-body .dim { color: #6e7681; }
+    .terminal-body .blue { color: #58a6ff; }
+    .terminal-body .green { color: #3fb950; }
+    .terminal-body .cyan { color: #39d2e2; }
+    .terminal-body .yellow { color: #d29922; }
+    .terminal-body .white { color: #f0f6fc; font-weight: 600; }
+    .terminal-body .red { color: #f85149; }
+    .terminal-body .bold { font-weight: 700; }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 100px 0;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-desc {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      max-width: 700px;
+      margin-bottom: 48px;
+    }
+
+    /* ===== FEATURES GRID ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ===== API COMPARISON ===== */
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 24px;
+    }
+
+    .api-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .api-card.recommended {
+      border-color: var(--green);
+      box-shadow: 0 0 30px var(--green-glow);
+    }
+
+    .api-card.recommended::before {
+      content: '★ RECOMENDADO';
+      position: absolute;
+      top: 16px;
+      right: -30px;
+      background: var(--green);
+      color: var(--bg);
+      padding: 4px 40px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      transform: rotate(45deg);
+      letter-spacing: 0.05em;
+    }
+
+    .api-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .api-card .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .api-card code {
+      display: block;
+      background: var(--bg-code);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .api-pros {
+      list-style: none;
+    }
+
+    .api-pros li {
+      padding: 6px 0;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .api-pros li .icon { flex-shrink: 0; }
+
+    /* ===== COMMANDS TABLE ===== */
+    .commands-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .commands-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 16px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 24px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .cmd-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+    }
+
+    .cmd-row:last-child { border-bottom: none; }
+
+    .cmd-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--cyan);
+      font-weight: 600;
+      width: 140px;
+      flex-shrink: 0;
+    }
+
+    .cmd-shortcut {
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      width: 60px;
+      flex-shrink: 0;
+    }
+
+    .cmd-desc {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    /* ===== INSTALL STEPS ===== */
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .install-step {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-glow);
+      border: 1px solid var(--border-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step-content p {
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .step-content code {
+      display: block;
+      background: var(--bg-code);
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--green);
+      border: 1px solid var(--border);
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* ===== ALERTS SECTION ===== */
+    .alerts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .alert-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .alert-card.danger {
+      border-left: 3px solid var(--red);
+    }
+
+    .alert-card.success {
+      border-left: 3px solid var(--green);
+    }
+
+    .alert-card h3 {
+      font-size: 1rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-preview {
+      background: var(--bg-code);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      border: 1px solid var(--border);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-heart {
+      color: var(--red);
+      display: inline-block;
+      animation: heartbeat 1.5s ease infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding: 120px 0 60px; }
+      .api-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .install-step { flex-direction: column; gap: 12px; }
+      .cmd-shortcut { display: none; }
+      .cmd-name { width: 110px; }
+      .alerts-grid { grid-template-columns: 1fr; }
+      section { padding: 60px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-logo">🛡️ <span>ROA-ASN-Monitor</span></a>
+      <ul class="nav-links">
+        <li><a href="#features">Recursos</a></li>
+        <li><a href="#api">API</a></li>
+        <li><a href="#commands">Comandos</a></li>
+        <li><a href="#install">Instalação</a></li>
+        <li><a href="https://github.com/davicjc/ROA-ASN-Monitor" class="github-btn">⭐ GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        v2.2.0 — Bash puro, sem dependências pesadas
+      </div>
+
+      <h1>
+        Monitore seus <span class="gradient">ROAs</span><br>
+        em tempo real
+      </h1>
+
+      <p>
+        Daemon Bash interativo que verifica a validade RPKI dos seus prefixos e envia alertas no Telegram. Console estilo servidor de Minecraft. Sem cron, sem complicação.
+      </p>
+
+      <div class="hero-actions">
+        <a href="https://github.com/davicjc/ROA-ASN-Monitor" class="btn btn-primary">
+          Começar agora →
+        </a>
+        <a href="#api" class="btn btn-secondary">
+          Ver opções de API
+        </a>
+      </div>
+
+      <!-- Terminal preview -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+          <span class="terminal-title">monitor_rpki.sh — bash</span>
+        </div>
+        <div class="terminal-body">
+<span class="dim">[14:30:01]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS268289</span> / <span class="white">45.237.200.0/22</span>...
+<span class="dim">[14:30:01]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS268289 / 45.237.200.0/22 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:02]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS268289</span> / <span class="white">170.233.20.0/22</span>...
+<span class="dim">[14:30:02]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS268289 / 170.233.20.0/22 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS268289</span> / <span class="white">2804:4ee4::/32</span>...
+<span class="dim">[14:30:03]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS268289 / 2804:4ee4::/32 → <span class="green bold">Valid</span>
+<span class="dim">──────┼─────────┼────────────────────────────────────────────────</span>
+<span class="dim">[14:30:03]</span> <span class="green bold"> OK </span>  │ <span class="green bold">Tudo OK! 7 prefixo(s) com status Valid.</span>
+<span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Próxima verificação: <span class="white">20:30:03</span> (intervalo: 21600s)
+<span class="dim">──────┼─────────┼────────────────────────────────────────────────</span>
+<span class="green">▶ monitor</span> <span class="dim">></span> <span class="white blink">_</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <span class="section-label">✨ Recursos</span>
+      <h2 class="section-title">Tudo que você precisa.<br>Nada que você não precisa.</h2>
+      <p class="section-desc">
+        Monitoramento RPKI completo em um único script Bash. Sem Docker, sem Node.js, sem Python — apenas <code>curl</code> e <code>jq</code>.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🖥️</span>
+          <h3>Console interativo</h3>
+          <p>Prompt estilo Minecraft — digite comandos em tempo real enquanto o daemon roda. Status, pause, check manual, tudo ao vivo.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🤖</span>
+          <h3>Bot Telegram completo</h3>
+          <p>7 comandos via Telegram: /log, /logall, /status, /check, /pause, /resume, /help. Polling a cada 1 segundo com resposta instantânea.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🚨</span>
+          <h3>Alertas instantâneos</h3>
+          <p>Se qualquer prefixo mudar de Valid para Invalid, Unknown ou erro de conexão — alerta imediato no Telegram com detalhes completos.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔄</span>
+          <h3>Duas fontes de API</h3>
+          <p>API pública do RIPE (HTTPS + HTTP fallback) ou Routinator local. Sem lock-in, configure conforme sua infraestrutura.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📋</span>
+          <h3>Log permanente</h3>
+          <p>Log nunca é apagado — mantém histórico completo. O bot envia os últimos 7 dias como arquivo .txt quando você pede /log.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <h3>Zero dependências pesadas</h3>
+          <p>Script Bash puro (~950 linhas). Só precisa de curl e jq — presentes em qualquer Linux. Sem runtime, sem framework, sem compilação.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API COMPARISON -->
+  <section id="api" style="background: rgba(17, 24, 39, 0.5);">
+    <div class="container">
+      <span class="section-label">🔌 Fonte de dados</span>
+      <h2 class="section-title">Escolha sua API de validação</h2>
+      <p class="section-desc">
+        O monitor consulta a validade RPKI dos seus prefixos. Você escolhe a fonte: API pública gratuita ou Routinator local sem limites.
+      </p>
+
+      <div class="api-grid">
+        <div class="api-card">
+          <h3>🌐 RIPEstat — API Pública</h3>
+          <p class="subtitle">Padrão — sem infraestrutura própria necessária</p>
+          <code>RPKI_API_MODE="ripestat"</code>
+          <ul class="api-pros">
+            <li><span class="icon">✅</span> Funciona imediatamente, zero setup</li>
+            <li><span class="icon">✅</span> Reflete a visão global da internet</li>
+            <li><span class="icon">✅</span> Fallback automático HTTPS → HTTP</li>
+            <li><span class="icon">⚠️</span> Rate limiting (~100 req/5min)</li>
+            <li><span class="icon">⚠️</span> Depende da estabilidade do RIPE</li>
+          </ul>
+        </div>
+
+        <div class="api-card recommended">
+          <h3>🏠 Routinator — API Local</h3>
+          <p class="subtitle">Para ISPs e datacenters com infra RPKI</p>
+          <code>RPKI_API_MODE="routinator"
+ROUTINATOR_URL="http://10.0.0.1:8323"</code>
+          <ul class="api-pros">
+            <li><span class="icon">✅</span> <strong>Sem rate limiting</strong> — consulte sem limites</li>
+            <li><span class="icon">✅</span> <strong>Resposta &lt;50ms</strong> — rede local</li>
+            <li><span class="icon">✅</span> Dados atualizados em tempo real</li>
+            <li><span class="icon">✅</span> Funciona sem internet (para diagnóstico)</li>
+            <li><span class="icon">✅</span> Autonomia total sobre a validação</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top: 36px; padding: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); border-left: 3px solid var(--yellow);">
+        <h4 style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">💡 Dica: Validando falsos resultados</h4>
+        <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 12px;">
+          Se suspeitar de falso positivo na API local, consulte a API pública para confirmar — ou vice-versa. O monitor tentará HTTPS primeiro e fará fallback para HTTP automaticamente:
+        </p>
+        <code style="display: block; background: var(--bg-code); padding: 14px 18px; border-radius: var(--radius-sm); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); border: 1px solid var(--border); white-space: pre; overflow-x: auto;">
+# Via RIPEstat (HTTPS ou HTTP)
+curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=12345&prefix=192.0.2.0/24" | jq '.data.status'
+
+# Via Routinator local
+curl -s "http://10.0.0.1:8323/api/v1/validity/12345/192.0.2.0/24" | jq '.validated_route.validity.state'</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMANDS -->
+  <section id="commands">
+    <div class="container">
+      <span class="section-label">🎮 Comandos</span>
+      <h2 class="section-title">Console + Telegram</h2>
+      <p class="section-desc">
+        Controle total do monitor pelo terminal ou pelo celular via Telegram.
+      </p>
+
+      <div class="commands-wrapper">
+        <div class="commands-tabs">
+          <button class="tab-btn active" onclick="switchTab('console')">🖥️ Console</button>
+          <button class="tab-btn" onclick="switchTab('telegram')">📱 Telegram</button>
+        </div>
+
+        <div id="tab-console" class="tab-content active">
+          <div class="cmd-row">
+            <span class="cmd-name">check</span>
+            <span class="cmd-shortcut">c</span>
+            <span class="cmd-desc">Forçar verificação RPKI agora</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">status</span>
+            <span class="cmd-shortcut">s</span>
+            <span class="cmd-desc">Exibir status, uptime, API e contadores</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">pause</span>
+            <span class="cmd-shortcut">p</span>
+            <span class="cmd-desc">Pausar verificações automáticas</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">resume</span>
+            <span class="cmd-shortcut">r</span>
+            <span class="cmd-desc">Retomar verificações automáticas</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">interval</span>
+            <span class="cmd-shortcut">i</span>
+            <span class="cmd-desc">Alterar intervalo (ex: interval 300)</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">test</span>
+            <span class="cmd-shortcut">t</span>
+            <span class="cmd-desc">Enviar mensagem de teste ao Telegram</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">reload</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Recarregar arquivo de configuração</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">prefixes</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Listar prefixos monitorados</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">stop</span>
+            <span class="cmd-shortcut">q</span>
+            <span class="cmd-desc">Parar o monitor</span>
+          </div>
+        </div>
+
+        <div id="tab-telegram" class="tab-content">
+          <div class="cmd-row">
+            <span class="cmd-name">/log</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Receber arquivo .txt com log dos últimos 7 dias</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">/logall</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Receber log completo (todo o histórico)</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">/status</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Ver status: uptime, API, contadores</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">/check</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Forçar verificação RPKI (responde com resultado)</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">/pause</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Pausar verificações automáticas</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">/resume</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Retomar verificações automáticas</span>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-name">/help</span>
+            <span class="cmd-shortcut"></span>
+            <span class="cmd-desc">Lista de comandos disponíveis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install" style="background: rgba(17, 24, 39, 0.5);">
+    <div class="container">
+      <span class="section-label">🚀 Instalação</span>
+      <h2 class="section-title">Pronto em 4 passos</h2>
+      <p class="section-desc">
+        Qualquer Linux com curl e jq. Menos de 2 minutos para começar.
+      </p>
+
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Instale as dependências</h3>
+            <p>Apenas curl e jq — provavelmente já estão instalados.</p>
+            <code>sudo apt install curl jq -y</code>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Clone o repositório</h3>
+            <code>git clone https://github.com/davicjc/ROA-ASN-Monitor.git
+cd ROA-ASN-Monitor</code>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Configure</h3>
+            <p>Copie o exemplo e preencha com seus dados do Telegram, ASN e prefixos.</p>
+            <code>cp config.env.example config.env
+nano config.env</code>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Execute!</h3>
+            <code>chmod +x monitor_rpki.sh
+./monitor_rpki.sh</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALERTS -->
+  <section id="alerts">
+    <div class="container">
+      <span class="section-label">📨 Alertas</span>
+      <h2 class="section-title">Exemplos de notificações</h2>
+      <p class="section-desc">
+        Alertas claros e diretos no Telegram — você sabe exatamente o que aconteceu.
+      </p>
+
+      <div class="alerts-grid">
+        <div class="alert-card danger">
+          <h3>🚨 Alerta Crítico</h3>
+          <div class="alert-preview">
+🚨 <strong>ALERTA RPKI CRÍTICO</strong> 🚨
+
+<strong>1</strong> problema(s) de <strong>3</strong> prefixo(s):
+
+❌ AS12345 / 192.0.2.0/24 → <span class="red"><strong>INVALID</strong></span>
+
+🕐 2026-02-23 14:30:00
+🖥️ srv-rpki-01
+
+Verifique seu Krill imediatamente!
+          </div>
+        </div>
+
+        <div class="alert-card success">
+          <h3>✅ Tudo OK</h3>
+          <div class="alert-preview">
+✅ <strong>RPKI OK</strong> — Todos os <strong>7</strong> prefixo(s)
+estão <strong>Valid</strong>.
+
+🕐 2026-02-23 14:30:00 | 🖥️ srv-rpki-01
+🔄 Próxima verificação: <strong>2026-02-23 20:30:00</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>
+        ☕ Feito com <span class="footer-heart">❤️</span> e café por
+        <a href="https://davicjc.com">davicjc</a>
+        ·
+        <a href="https://github.com/davicjc/ROA-ASN-Monitor">GitHub</a>
+        ·
+        MIT License
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Smooth reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.feature-card, .api-card, .install-step, .alert-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/gh/davicjc/FooterDavicjc@main/footer_cjc.js"></script>
+</body>
+</html>

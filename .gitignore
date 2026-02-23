@@ -1,0 +1,15 @@
+# Configuração real (contém tokens sensíveis)
+config.env
+
+# Logs e estado
+logs/
+*.log
+.monitor.pid
+.last_state
+.tg_offset
+
+# Editor
+.vscode/
+*.swp
+*.swo
+*~
