@@ -1081,9 +1081,13 @@ nano config.env</code>
         <div class="install-step">
           <div class="step-number">4</div>
           <div class="step-content">
-            <h3>Execute!</h3>
+            <h3>Execute com screen!</h3>
+            <p>Use <strong>screen</strong> para rodar em segundo plano. <code style="display:inline; padding:2px 6px; background:var(--bg-code); border:1px solid var(--border); border-radius:4px; font-size:0.85em;">Ctrl+A, D</code> para desatachar.</p>
             <code>chmod +x monitor_rpki.sh
-./monitor_rpki.sh</code>
+screen -S rpki-monitor ./monitor_rpki.sh
+
+# Desatachar (sair sem parar): Ctrl+A, D
+# Reconectar ao console:       screen -r rpki-monitor</code>
           </div>
         </div>
       </div>

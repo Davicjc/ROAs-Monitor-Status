@@ -143,10 +143,13 @@ nano config.env   # preencha com seus dados
 chmod +x monitor_rpki.sh
 ```
 
-### 4. Iniciar o monitor
+### 4. Iniciar o monitor (com `screen`)
 
 ```bash
-./monitor_rpki.sh
+screen -S rpki-monitor ./monitor_rpki.sh
+
+# Para desatachar (sair sem parar): Ctrl+A, D
+# Para reconectar ao console:       screen -r rpki-monitor
 ```
 
 Pronto! O monitor inicia, faz a primeira verificação e fica rodando com o prompt interativo.
