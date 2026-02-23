@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZR8RXGPS7S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZR8RXGPS7S');
+  </script>
+
   <!-- ===== SEO — Primary ===== -->
   <title>ROAs-Monitor-Status — Monitoramento RPKI em Tempo Real com Alertas Telegram</title>
   <meta name="description" content="Ferramenta open-source em Bash para monitorar ROAs e validação RPKI do seu ASN em tempo real. Alertas instantâneos via Telegram, console interativo, suporte a Routinator local e API RIPEstat. Sem cron, sem Docker, sem dependências pesadas.">
@@ -814,12 +823,12 @@
           <span class="terminal-title">monitor_rpki.sh — bash</span>
         </div>
         <div class="terminal-body">
-<span class="dim">[14:30:01]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS268289</span> / <span class="white">45.237.200.0/22</span>...
-<span class="dim">[14:30:01]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS268289 / 45.237.200.0/22 → <span class="green bold">Valid</span>
-<span class="dim">[14:30:02]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS268289</span> / <span class="white">170.233.20.0/22</span>...
-<span class="dim">[14:30:02]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS268289 / 170.233.20.0/22 → <span class="green bold">Valid</span>
-<span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS268289</span> / <span class="white">2804:4ee4::/32</span>...
-<span class="dim">[14:30:03]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS268289 / 2804:4ee4::/32 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:01]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS64500</span> / <span class="white">198.51.100.0/22</span>...
+<span class="dim">[14:30:01]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS64500 / 198.51.100.0/22 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:02]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS64500</span> / <span class="white">203.0.113.0/22</span>...
+<span class="dim">[14:30:02]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS64500 / 203.0.113.0/22 → <span class="green bold">Valid</span>
+<span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Consultando <span class="white">AS64500</span> / <span class="white">2001:db8::/32</span>...
+<span class="dim">[14:30:03]</span> <span class="green"> OK </span>  │ <span class="green">✔</span> AS64500 / 2001:db8::/32 → <span class="green bold">Valid</span>
 <span class="dim">──────┼─────────┼────────────────────────────────────────────────</span>
 <span class="dim">[14:30:03]</span> <span class="green bold"> OK </span>  │ <span class="green bold">Tudo OK! 7 prefixo(s) com status Valid.</span>
 <span class="dim">[14:30:03]</span> <span class="blue">INFO</span>  │ Próxima verificação: <span class="white">20:30:03</span> (intervalo: 21600s)

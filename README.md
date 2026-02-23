@@ -196,7 +196,7 @@ Usa uma instância local do [Routinator](https://www.nlnetlabs.nl/projects/rpki/
 
 ### Por que usamos API local na nossa implementação
 
-Na nossa empresa (**AS268289**), optamos pelo **Routinator local** pelos seguintes motivos:
+Na nossa empresa (**AS64500**), optamos pelo **Routinator local** pelos seguintes motivos:
 
 1. **Velocidade** — A consulta é feita em rede local (LAN), respondendo em milissegundos ao invés de segundos
 2. **Sem rate limiting** — Com 7 prefixos monitorados a cada 6 horas, não queremos depender de limites de API externa
