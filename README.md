@@ -6,7 +6,7 @@
 </p>
 
 <h1 align="center">
-  🛡️ ROA-ASN-Monitor
+  🛡️ ROAs-Monitor-Status
 </h1>
 
 <p align="center">
@@ -39,7 +39,7 @@ Com ROAs publicados e validados, os grandes operadores do mundo **descartam** au
 
 Se o seu ROA **expira**, **fica incorreto** ou o **Krill** (o servidor RPKI) para de funcionar, seus prefixos podem ser vistos como **Invalid** pela internet global — e os operadores que fazem validação RPKI **param de aceitar suas rotas**. Resultado? **Queda total de conectividade.**
 
-**ROA-ASN-Monitor** existe para evitar isso: ele verifica continuamente se os seus ROAs estão válidos e te alerta no Telegram **antes** que vire um problema.
+**ROAs-Monitor-Status** existe para evitar isso: ele verifica continuamente se os seus ROAs estão válidos e te alerta no Telegram **antes** que vire um problema.
 
 ---
 
@@ -126,8 +126,8 @@ sudo yum install jq curl -y
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/davicjc/ROA-ASN-Monitor.git
-cd ROA-ASN-Monitor
+git clone https://github.com/davicjc/ROAs-Monitor-Status.git
+cd ROAs-Monitor-Status
 ```
 
 ### 2. Criar o arquivo de configuração
@@ -155,7 +155,7 @@ Pronto! O monitor inicia, faz a primeira verificação e fica rodando com o prom
 
 ## 🏗️ Escolha da API — Fontes de Validação
 
-O ROA-ASN-Monitor suporta **duas fontes** para consultar a validade RPKI dos seus prefixos. Essa escolha é feita no `config.env` via a variável `RPKI_API_MODE`.
+O ROAs-Monitor-Status suporta **duas fontes** para consultar a validade RPKI dos seus prefixos. Essa escolha é feita no `config.env` via a variável `RPKI_API_MODE`.
 
 ### Opção 1: `ripestat` — API Pública do RIPE (padrão)
 
@@ -401,14 +401,14 @@ Para rodar sem console interativo:
 ```ini
 # /etc/systemd/system/rpki-monitor.service
 [Unit]
-Description=ROA-ASN-Monitor - RPKI Validation Daemon
+Description=ROAs-Monitor-Status - RPKI Validation Daemon
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/opt/ROA-ASN-Monitor/monitor_rpki.sh
-WorkingDirectory=/opt/ROA-ASN-Monitor
+ExecStart=/opt/ROAs-Monitor-Status/monitor_rpki.sh
+WorkingDirectory=/opt/ROAs-Monitor-Status
 Restart=always
 RestartSec=30
 User=nobody
@@ -430,7 +430,7 @@ sudo systemctl enable --now rpki-monitor
 ## 📁 Estrutura do Projeto
 
 ```
-ROA-ASN-Monitor/
+ROAs-Monitor-Status/
 ├── monitor_rpki.sh       # Script principal (daemon interativo)
 ├── config.env.example    # Modelo de configuração
 ├── config.env            # Sua configuração (não versionado)
@@ -475,7 +475,7 @@ Verifique seu Krill imediatamente!
 ### 📊 Status (via `/status`)
 
 ```
-📊 ROA-ASN-Monitor — Status
+📊 ROAs-Monitor-Status — Status
 
 ▸ Estado: RODANDO
 ▸ Uptime: 5d 12h 30m
@@ -495,7 +495,7 @@ Verifique seu Krill imediatamente!
 
 ## 🆚 Comparação com outras soluções
 
-| Característica | ROA-ASN-Monitor | Script cron simples | RIPE Atlas | BGPalerter |
+| Característica | ROAs-Monitor-Status | Script cron simples | RIPE Atlas | BGPalerter |
 |---------------|:-:|:-:|:-:|:-:|
 | **Sem dependências pesadas** | ✅ | ✅ | ❌ | ❌ |
 | **Console interativo** | ✅ | ❌ | ❌ | ❌ |

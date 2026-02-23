@@ -5,29 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- ===== SEO — Primary ===== -->
-  <title>ROA-ASN-Monitor — Monitoramento RPKI em Tempo Real com Alertas Telegram</title>
+  <title>ROAs-Monitor-Status — Monitoramento RPKI em Tempo Real com Alertas Telegram</title>
   <meta name="description" content="Ferramenta open-source em Bash para monitorar ROAs e validação RPKI do seu ASN em tempo real. Alertas instantâneos via Telegram, console interativo, suporte a Routinator local e API RIPEstat. Sem cron, sem Docker, sem dependências pesadas.">
   <meta name="keywords" content="RPKI, ROA, ASN, BGP, monitoramento, monitor, validação, Routinator, RIPEstat, RIPE NCC, Telegram, alertas, bash, script, linux, open-source, BGP hijack, route leak, segurança, roteamento, internet, ISP, provedor, Krill, NIC.br, LACNIC, prefixo, autonomous system, route origin authorization">
   <meta name="author" content="davicjc">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="theme-color" content="#0a0e17">
-  <link rel="canonical" href="https://davicjc.github.io/ROA-ASN-Monitor/">
+  <link rel="canonical" href="https://davicjc.github.io/ROAs-Monitor-Status/">
 
   <!-- ===== SEO — Open Graph (Facebook, LinkedIn, Discord) ===== -->
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ROA-ASN-Monitor">
-  <meta property="og:title" content="ROA-ASN-Monitor — Monitoramento RPKI com Alertas Telegram">
+  <meta property="og:site_name" content="ROAs-Monitor-Status">
+  <meta property="og:title" content="ROAs-Monitor-Status — Monitoramento RPKI com Alertas Telegram">
   <meta property="og:description" content="Daemon Bash interativo que monitora a validação RPKI dos seus prefixos em tempo real. Alertas instantâneos por Telegram quando um ROA muda de Valid para Invalid. Suporte a Routinator local e API pública RIPEstat.">
-  <meta property="og:url" content="https://davicjc.github.io/ROA-ASN-Monitor/">
-  <meta property="og:image" content="https://opengraph.githubassets.com/1/davicjc/ROA-ASN-Monitor">
-  <meta property="og:image:alt" content="ROA-ASN-Monitor — Monitoramento RPKI open-source">
+  <meta property="og:url" content="https://davicjc.github.io/ROAs-Monitor-Status/">
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/davicjc/ROAs-Monitor-Status">
+  <meta property="og:image:alt" content="ROAs-Monitor-Status — Monitoramento RPKI open-source">
   <meta property="og:locale" content="pt_BR">
 
   <!-- ===== SEO — Twitter Card ===== -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ROA-ASN-Monitor — Monitoramento RPKI em Tempo Real">
+  <meta name="twitter:title" content="ROAs-Monitor-Status — Monitoramento RPKI em Tempo Real">
   <meta name="twitter:description" content="Daemon Bash para monitorar ROAs/RPKI com alertas instantâneos via Telegram. Console interativo, log permanente, suporte a Routinator e RIPEstat.">
-  <meta name="twitter:image" content="https://opengraph.githubassets.com/1/davicjc/ROA-ASN-Monitor">
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1/davicjc/ROAs-Monitor-Status">
   <meta name="twitter:creator" content="@davicjc">
 
   <!-- ===== SEO — Schema.org JSON-LD (Structured Data) ===== -->
@@ -35,7 +35,7 @@
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "ROA-ASN-Monitor",
+    "name": "ROAs-Monitor-Status",
     "headline": "Monitoramento RPKI em Tempo Real com Alertas Telegram",
     "description": "Daemon Bash interativo open-source para monitorar a validação RPKI (ROA) dos prefixos do seu ASN. Receba alertas instantâneos via Telegram quando um prefixo mudar de Valid para Invalid. Suporte a Routinator local e API pública RIPEstat.",
     "applicationCategory": "NetworkingApplication",
@@ -51,8 +51,8 @@
       "url": "https://davicjc.com"
     },
     "license": "https://opensource.org/licenses/MIT",
-    "url": "https://github.com/davicjc/ROA-ASN-Monitor",
-    "codeRepository": "https://github.com/davicjc/ROA-ASN-Monitor",
+    "url": "https://github.com/davicjc/ROAs-Monitor-Status",
+    "codeRepository": "https://github.com/davicjc/ROAs-Monitor-Status",
     "programmingLanguage": "Bash",
     "keywords": ["RPKI", "ROA", "ASN", "BGP", "monitoring", "Telegram", "Routinator", "RIPEstat", "bash", "open-source", "network security"],
     "datePublished": "2025-01-01",
@@ -74,7 +74,7 @@
       },
       {
         "@type": "Question",
-        "name": "Preciso de um Routinator local para usar o ROA-ASN-Monitor?",
+        "name": "Preciso de um Routinator local para usar o ROAs-Monitor-Status?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Não. O monitor suporta dois modos: API pública do RIPEstat (padrão, sem instalar nada) e Routinator local (mais rápido, sem rate-limit). Configure via a variável RPKI_API_MODE no config.env."
@@ -82,7 +82,7 @@
       },
       {
         "@type": "Question",
-        "name": "Quais são os requisitos para rodar o ROA-ASN-Monitor?",
+        "name": "Quais são os requisitos para rodar o ROAs-Monitor-Status?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Apenas um Linux com Bash, curl e jq instalados. Também é necessário um Bot Telegram com token e chat ID configurados. Não precisa de Docker, Python, Node.js ou qualquer runtime pesado."
@@ -90,7 +90,7 @@
       },
       {
         "@type": "Question",
-        "name": "O ROA-ASN-Monitor envia alertas quando um prefixo fica Invalid?",
+        "name": "O ROAs-Monitor-Status envia alertas quando um prefixo fica Invalid?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Sim. O monitor envia alertas instantâneos via Telegram quando qualquer prefixo muda para Invalid, Unknown ou apresenta erro de conexão. Também pode enviar confirmações periódicas de que tudo está OK."
@@ -768,13 +768,13 @@
   <!-- NAV -->
   <nav>
     <div class="container">
-      <a href="#" class="nav-logo">🛡️ <span>ROA-ASN-Monitor</span></a>
+      <a href="#" class="nav-logo">🛡️ <span>ROAs-Monitor-Status</span></a>
       <ul class="nav-links">
         <li><a href="#features">Recursos</a></li>
         <li><a href="#api">API</a></li>
         <li><a href="#commands">Comandos</a></li>
         <li><a href="#install">Instalação</a></li>
-        <li><a href="https://github.com/davicjc/ROA-ASN-Monitor" class="github-btn">⭐ GitHub</a></li>
+        <li><a href="https://github.com/davicjc/ROAs-Monitor-Status" class="github-btn">⭐ GitHub</a></li>
       </ul>
     </div>
   </nav>
@@ -797,7 +797,7 @@
       </p>
 
       <div class="hero-actions">
-        <a href="https://github.com/davicjc/ROA-ASN-Monitor" class="btn btn-primary">
+        <a href="https://github.com/davicjc/ROAs-Monitor-Status" class="btn btn-primary">
           Começar agora →
         </a>
         <a href="#api" class="btn btn-secondary">
@@ -1054,8 +1054,8 @@ curl -s "http://10.0.0.1:8323/api/v1/validity/12345/192.0.2.0/24" | jq '.validat
           <div class="step-number">2</div>
           <div class="step-content">
             <h3>Clone o repositório</h3>
-            <code>git clone https://github.com/davicjc/ROA-ASN-Monitor.git
-cd ROA-ASN-Monitor</code>
+            <code>git clone https://github.com/davicjc/ROAs-Monitor-Status.git
+cd ROAs-Monitor-Status</code>
           </div>
         </div>
 
@@ -1128,7 +1128,7 @@ estão <strong>Valid</strong>.
         ☕ Feito com <span class="footer-heart">❤️</span> e café por
         <a href="https://davicjc.com">davicjc</a>
         ·
-        <a href="https://github.com/davicjc/ROA-ASN-Monitor">GitHub</a>
+        <a href="https://github.com/davicjc/ROAs-Monitor-Status">GitHub</a>
         ·
         MIT License
       </p>

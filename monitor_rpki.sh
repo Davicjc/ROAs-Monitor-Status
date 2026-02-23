@@ -7,7 +7,7 @@
 # |_| \_\\___/_/   \_\   /_/   \_\____/|_| \_|   |_|  |_|\___/|_| |_|_|\__\___/|_|
 #
 # =============================================================================
-# ROA-ASN-Monitor — Daemon interativo de monitoramento RPKI
+# ROAs-Monitor-Status — Daemon interativo de monitoramento RPKI
 # Roda como um serviço próprio com console, log e comandos internos.
 # Sem necessidade de cron ou ferramentas externas.
 # =============================================================================
@@ -267,7 +267,7 @@ enviar_telegram_doc_to() {
 
 test_telegram() {
     log_info "Enviando mensagem de teste ao Telegram..."
-    local msg="🧪 *ROA-ASN-Monitor — Teste*%0A%0A"
+    local msg="🧪 *ROAs-Monitor-Status — Teste*%0A%0A"
     msg+="Mensagem de teste enviada com sucesso!%0A"
     msg+="🕐 $(datestamp)%0A"
     msg+="🖥️ $(hostname)"
@@ -329,7 +329,7 @@ get_status_text() {
     local api_label="RIPEstat (público)"
     [ "$RPKI_API_MODE" = "routinator" ] && api_label="Routinator (local)"
 
-    local txt="📊 *ROA-ASN-Monitor — Status*%0A%0A"
+    local txt="📊 *ROAs-Monitor-Status — Status*%0A%0A"
     txt+="▸ Estado: *${estado}*%0A"
     txt+="▸ Uptime: *${dias}d ${horas}h ${mins}m*%0A"
     txt+="▸ Intervalo: *${CHECK_INTERVAL}s* ($((CHECK_INTERVAL / 60))min)%0A"
@@ -400,7 +400,7 @@ process_telegram_command() {
             ;;
         /help|/start)
             log_cmd "Telegram [@${user}]: solicitou /help"
-            local help_msg="🤖 *ROA-ASN-Monitor — Comandos*%0A%0A"
+            local help_msg="🤖 *ROAs-Monitor-Status — Comandos*%0A%0A"
             help_msg+="/log — Log dos últimos 7 dias%0A"
             help_msg+="/logall — Log completo (todo o histórico)%0A"
             help_msg+="/status — Ver status atual do monitor%0A"
