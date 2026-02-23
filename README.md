@@ -45,7 +45,7 @@ Se o seu ROA **expira**, **fica incorreto** ou o **Krill** (o servidor RPKI) par
 
 ## 🚀 Como funciona
 
-O monitor roda como um **daemon interativo** no terminal — com console, prompt de comandos e log em tempo real (estilo servidor de Minecraft):
+O monitor roda como um **daemon interativo** no terminal — com console, prompt de comandos e log em tempo real:
 
 ```
 $ ./monitor_rpki.sh
