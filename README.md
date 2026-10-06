@@ -25,6 +25,11 @@
 
 ---
 
+
+<p align="center">
+  <img src=".github/readme/preview.png" alt="Prévia de ROAs-Monitor-Status no computador e no celular" width="100%">
+</p>
+
 ## 🔐 O que é RPKI e por que monitorar?
 
 **RPKI** (Resource Public Key Infrastructure) é o sistema de segurança que protege o roteamento da internet. Ele funciona como um "certificado digital" para rotas BGP — quando você publica um **ROA** (Route Origin Authorization), está declarando oficialmente: *"Eu, AS12345, sou o dono legítimo do prefixo 192.00.00.00/20 e autorizo seu anúncio."*
