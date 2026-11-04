@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/bash-5.0+-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white" alt="Bash 5.0+">
   <img src="https://img.shields.io/badge/RPKI-Monitoring-0078D4?style=for-the-badge&logo=letsencrypt&logoColor=white" alt="RPKI">
   <img src="https://img.shields.io/badge/Telegram-Alerts-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram">
-  <img src="https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge" alt="MIT License">
+  <img src="https://img.shields.io/badge/licen%C3%A7a-propriet%C3%A1ria-6e7681?style=for-the-badge" alt="Licença proprietária">
 </p>
 
 <h1 align="center">
@@ -533,7 +533,7 @@ Pull requests são bem-vindos! Para mudanças significativas, abra uma issue pri
 
 ## 📄 Licença
 
-MIT — use, modifique e distribua livremente.
+Código proprietário de **Davi Castro** e **Audicom Telecom**, todos os direitos reservados. Veja [LICENSE](LICENSE).
 
 ---
 
